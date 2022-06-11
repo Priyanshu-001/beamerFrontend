@@ -32,10 +32,15 @@ function App() {
     console.log(msg)
   }
   function join(id){
+    try{
       const socket = io(url);
       setSocket(socket)
       socket.emit('join', id);
-     setjoined(true)
+      setjoined(true)
+    }
+    catch(err){
+      alert('most likley server is sleeping pls wake ', url, 'by visiting it')
+    }
       
   }
   return (
