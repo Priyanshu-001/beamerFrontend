@@ -15,11 +15,14 @@ function App() {
     url='https://beamer-mobile.herokuapp.com/'
   console.log(url)
   const [socket,setSocket] = useState('')
+  const [files,setFiles] = useState([])
   const [joined,setjoined] = useState(false)
   const [msgs,setMsgs] = useState([])
   useEffect(()=>{
     if(joined){
       socket.on('msg',msgRecieved)
+      socket.on('file',fileRecieved)
+
       console.log('listenning to msgs')
     }
   },[joined])
@@ -30,6 +33,21 @@ function App() {
   function send(msg){
     socket.emit('msg',msg)
     console.log(msg)
+  }
+  function fileUploaded(event){
+
+    try{
+      socket.emit('file',event.xhr.response)
+      console.log(event.xhr.response)
+    }
+    catch(err)
+    {
+      console.log(err)
+    }
+  }
+  function fileRecieved(file){
+    console.log('file='+file)
+    setFiles(files=>[...files,JSON.parse(file)])
   }
   function join(id){
     try{
@@ -45,8 +63,9 @@ function App() {
   }
   return (
     <div className="App">
+   
     { !joined  && <JoinRoom join={join}/> }
-      { joined && <Messages msgs={msgs} send={send} />}
+      { joined && <Messages msgs={msgs} send={send} url={url} files={files} fileUploaded={fileUploaded}/>}
     </div>
   );
 }
